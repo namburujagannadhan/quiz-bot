@@ -1,0 +1,36 @@
+git clone https://github.com/impresssai/quiz-bot
+cd quiz-bot
+pip install -r requirements.txt
+python run.py
+
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+def record_current_answer(user_session, answer):
+    current_question = user_session['current_question']
+    if current_question is not None:
+        user_session['answers'][current_question] = answer
+        # Validation logic can be added here
+        return True
+    return False
+
+def get_next_question(user_session):
+    questions = user_session['questions']
+    answers = user_session['answers']
+    
+    for question in questions:
+        if question not in answers:
+            user_session['current_question'] = question
+            return question
+    
+    user_session['current_question'] = None
+    return None
+def generate_final_response(user_session):
+    correct_answers = user_session['correct_answers']
+    user_answers = user_session['answers']
+    
+    score = sum(1 for q, a in user_answers.items() if correct_answers[q] == a)
+    total_questions = len(correct_answers)
+    
+    return f"You've completed the quiz! Your score is {score} out of {total_questions}."
